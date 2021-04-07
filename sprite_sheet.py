@@ -7,6 +7,7 @@ imgheight = im.size[1]/4
 # name each frame with direction + frame number
 keyList = ["D1", "D2", "D3", "D4", "L1", "L2", "L3", "L4", "R1", "R2", "R3", "R4", "U1", "U2", "U3", "U4"]
 # create a dictionary
+d = {}
 k = 0
 for j in range(4):
     for i in range(4):
