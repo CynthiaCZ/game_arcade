@@ -64,3 +64,19 @@ redcar = car(red, 60, 100)
 redcar.rect.x = 350
 redcar.rect.y = 0
 fullspritelist.add(redcar)
+
+bluecar = car(blue, 60, 100)
+bluecar.rect.x = 200
+bluecar.rect.y = 0
+fullspritelist.add(bluecar)
+
+greencar = car(green, 60, 100)
+greencar.rect.x = 275
+greencar.rect.y = 0
+fullspritelist.add(greencar)
+
+yellowcar = car(yellow, 60, 100)
+yellowcar.rect.x = 350
+yellowcar.rect.y = 0
+fullspritelist.add(yellowcar)
+
