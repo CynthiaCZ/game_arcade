@@ -80,3 +80,31 @@ yellowcar.rect.x = 350
 yellowcar.rect.y = 0
 fullspritelist.add(yellowcar)
 
+#Main program while loop
+running = True
+
+while running:
+    
+    #Uses series of if statements to detect keyboard input on the arrow keys or the space bar to reset position if the sprite goes off of the screen
+    #get_pressed() is used to store the keyboard input and if statements check which key is pressed
+    keypress = pg.key.get_pressed()        
+    if keypress[K_LEFT]:
+        mysprite.rect.x -= 3
+    if keypress[K_RIGHT]:
+        mysprite.rect.x += 3
+    if keypress[K_UP]:
+        mysprite.rect.y -= 3
+    if keypress[K_DOWN]:
+        mysprite.rect.y += 3
+    if keypress[K_SPACE]:
+        mysprite.rect.x = 0
+        mysprite.rect.y = 250
+        fullspritelist.add(mysprite)
+    
+    #Allows the user to quit the pygame window by exiting out or pressing the escape key
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                running = False
