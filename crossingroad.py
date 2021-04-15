@@ -48,3 +48,19 @@ mysprite = mysprite(yellow, 50, 50, 20)
 mysprite.rect.x = 0
 mysprite.rect.y = 250
 fullspritelist.add(mysprite)
+
+#Creating a class "car" and then using __init__ to create an object from this class and initializing its attributes
+#Making a rectangular object that will be used to make the moving cars and the finish line
+class car(pg.sprite.Sprite):
+
+    def __init__(self, color, x, y):
+        super().__init__() #Calling parent class
+        self.image = pg.Surface([x, y])
+        pg.draw.rect(self.image, color, [0, 0, x, y])
+        self.rect = self.image.get_rect()
+
+#Making and positioning the different colors of car, adding them to the full sprite list
+redcar = car(red, 60, 100)
+redcar.rect.x = 350
+redcar.rect.y = 0
+fullspritelist.add(redcar)
