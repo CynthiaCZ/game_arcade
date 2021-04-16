@@ -108,3 +108,26 @@ while running:
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE:
                 running = False
+                
+    #Draws the background of the grass and road
+    pg.draw.rect(screen, black, [200,0,400,550])
+    pg.draw.line(screen, yellow, [350,0], [350,50], 5)
+    pg.draw.line(screen, yellow, [350,125], [350,200], 5)
+    pg.draw.line(screen, yellow, [350,275], [350,350], 5)
+    pg.draw.line(screen, yellow, [350,425], [350,500], 5)
+    pg.draw.rect(screen, darkgreen, [0,0,200,550])
+    pg.draw.rect(screen, darkgreen, [500,0,250,550])
+    
+    #Displays the instructions on the top of the screen and stays there for the duration of the game
+    pg.font.init()
+    font = pg.font.SysFont('Calibri', 23)
+    font1 = pg.font.SysFont('Calibri', 23)
+    fontsurface = font.render('Make it to the finish line without getting close to a car!', False, white)
+    fontsurface1 = font1.render('Use the arrow keys to move, press the space key to reset your position', False, white)
+    screen.blit(fontsurface, (10,0))
+    screen.blit(fontsurface1, (10,40))
+
+    fullspritelist.draw(screen) #Draws all of the sprites on the screen
+    pg.display.update() #Updates drawing of sprites
+
+pg.quit()
