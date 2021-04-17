@@ -90,6 +90,8 @@ carlist.add(yellowcar)
 #Main program while loop
 running = True
 
+counter = 2 #Counter used to enter different if statements so that the different color cars start at different places of the screen
+
 while running:
     redcar.rect.y += 2 #Gives the red car a downward speed of 2
     #Identifies when the car goes off of the bottom of the screen and resets the position to the top of the screen
