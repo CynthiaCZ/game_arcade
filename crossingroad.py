@@ -80,6 +80,13 @@ yellowcar.rect.x = 350
 yellowcar.rect.y = 0
 fullspritelist.add(yellowcar)
 
+#Making a list with all of the moving cars, list will be used to identify collision between sprite and any of the cars
+carlist = pg.sprite.Group()
+carlist.add(redcar)
+carlist.add(bluecar)
+carlist.add(greencar)
+carlist.add(yellowcar)
+
 #Main program while loop
 running = True
 
@@ -121,6 +128,18 @@ while running:
         yellowcar.rect.x = 350
         yellowcar.rect.y = 0
         fullspritelist.add(yellowcar)
+        
+    #Using spritecollide to detect collision between mysprite and any of the cars by looping through any collisions between the sprite and cars in the carlist
+    for car in pg.sprite.spritecollide(mysprite,carlist,False):
+        pg.font.init()
+        font = pg.font.SysFont('Calibri', 30) #Sets font
+        fontsurface = font.render('You have been hit! Try again', False, white) #Displays "try again" text
+        screen.blit(fontsurface, (150,250)) #Positioning text
+        pg.display.update() #Updating display to show text
+        time.sleep(3) #Sleeps the program for 3 seconds so player can reset and read the text
+        mysprite.rect.x = 0
+        mysprite.rect.y = 250
+        fullspritelist.add(mysprite)
         
     #Uses series of if statements to detect keyboard input on the arrow keys or the space bar to reset position if the sprite goes off of the screen
     #get_pressed() is used to store the keyboard input and if statements check which key is pressed
