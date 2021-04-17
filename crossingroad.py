@@ -84,7 +84,44 @@ fullspritelist.add(yellowcar)
 running = True
 
 while running:
-    
+    redcar.rect.y += 2 #Gives the red car a downward speed of 2
+    #Identifies when the car goes off of the bottom of the screen and resets the position to the top of the screen
+    if redcar.rect.y > 550:
+        redcar.rect.x = 425
+        redcar.rect.y = 0
+        fullspritelist.add(redcar)
+        
+    bluecar.rect.y += 2 #Gives the blue car a downward speed of 2
+    #Identifies when the car goes off of the bottom of the screen and resets the position to the top of the screen, only enters this statement every
+    #other time so the car swithes the lane it is driving in every time
+    if bluecar.rect.y > 550 and counter%2 == 0:
+        bluecar.rect.x = 425
+        bluecar.rect.y = 0
+        fullspritelist.add(bluecar)
+        counter += 1
+
+    #Identifies when the car goes off of the bottom of the screen and resets the position to the top of the screen, only enters this statement every
+    #other time so the car swithes the lane it is driving in every time
+    if bluecar.rect.y > 550 and counter%2 != 0:
+        bluecar.rect.x = 200
+        bluecar.rect.y = 0
+        fullspritelist.add(bluecar)
+        counter += 1
+
+    greencar.rect.y += 3 #Gives the green car a downward speed of 3
+    #Identifies when the car goes off of the bottom of the screen and resets the position to the top of the screen
+    if greencar.rect.y > 550:
+        greencar.rect.x = 275
+        greencar.rect.y = 0
+        fullspritelist.add(greencar)
+
+    yellowcar.rect.y += 4 #Gives the green car a downward speed of 4
+    #Identifies when the car goes off of the bottom of the screen and resets the position to the top of the screen
+    if yellowcar.rect.y > 550:
+        yellowcar.rect.x = 350
+        yellowcar.rect.y = 0
+        fullspritelist.add(yellowcar)
+        
     #Uses series of if statements to detect keyboard input on the arrow keys or the space bar to reset position if the sprite goes off of the screen
     #get_pressed() is used to store the keyboard input and if statements check which key is pressed
     keypress = pg.key.get_pressed()        
