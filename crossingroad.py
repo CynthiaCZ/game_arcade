@@ -82,12 +82,21 @@ yellowcar.rect.x = 350
 yellowcar.rect.y = 0
 fullspritelist.add(yellowcar)
 
+finishline = car(red, 10, 550)
+finishline.rect.x = 650
+finishline.rect.y = 0
+fullspritelist.add(finishline)
+
 #Making a list with all of the moving cars, list will be used to identify collision between sprite and any of the cars
 carlist = pg.sprite.Group()
 carlist.add(redcar)
 carlist.add(bluecar)
 carlist.add(greencar)
 carlist.add(yellowcar)
+
+#Only way to make collision loop work was to make a list, so made a list with only the finish line in it
+finishlinelist = pg.sprite.Group()
+finishlinelist.add(finishline)
 
 #Main program while loop
 running = True
@@ -144,6 +153,17 @@ while running:
         mysprite.rect.x = 0
         mysprite.rect.y = 250
         fullspritelist.add(mysprite)
+        
+    #Using spritecollide to detect a collision between the finish line and mysprite which would indicate that the player won
+    crossfinishline = pg.sprite.spritecollide(mysprite,finishlinelist,False)
+    for car in crossfinishline:
+        pg.font.init()
+        font = pg.font.SysFont('Calibri', 30) #Sets font
+        fontsurface = font.render('Congrats! You made it out alive!', False, white) #Displays "try again" text
+        screen.blit(fontsurface, (150,250)) #Positioning text
+        pg.display.update()
+        time.sleep(3) #Sleeps the program for 3 seconds so you can reset and read the text
+        running = False #Exits the program once you won
         
     #Uses series of if statements to detect keyboard input on the arrow keys or the space bar to reset position if the sprite goes off of the screen
     #get_pressed() is used to store the keyboard input and if statements check which key is pressed
