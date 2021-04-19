@@ -1,5 +1,3 @@
-# Added piece move() method
-
 import pygame, sys
 #Importing key inputs that will be used for sprite navigation
 from pygame.locals import (
