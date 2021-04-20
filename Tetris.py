@@ -48,7 +48,10 @@ class piece(pygame.sprite.Group):
 
     def move(self,direc):
         for blk in self.sprites():
-            mag = 1
+            if direc == 'L' or direc == 'R':
+                mag = 1*blockSize
+            else:
+                mag = 1
             blk.move(direc,mag)
             
 # Initialize program
@@ -106,10 +109,10 @@ while True:
         if event.type == KEYDOWN:
             if event.key == K_LEFT:
                 print('LEFT')
-                testBlock.move('L',1*blockSize)
+                testPiece.move('L')
             if event.key == K_RIGHT:
                 print('RIGHT')
-                testBlock.move('R',1*blockSize)
+                testPiece.move('R')
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
