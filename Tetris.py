@@ -11,6 +11,16 @@ from pygame.locals import (
     QUIT,
 )
 
+buildPiece = {
+    'I':[[0,0],[-1,0],[-2,0],[1,0]],
+    'J':[[0,0],[-1,0],[-1,-1],[1,0]],
+    'L':[[0,0],[-1,0],[1,0],[1,-1]],
+    'O':[[0,0],[-1,0],[-1,-1],[0,-1]],
+    'S':[[0,0],[-1,0],[0,-1],[-1,-1]],
+    'T':[[0,0],[-1,0],[0,-1],[1,0]],
+    'Z':[[0,0],[0,-1],[-1,-1],[1,0]],
+}
+
 def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
     for x in range(0, gridWidth, blockSize):
         for y in range(0, gridHeight, blockSize):
@@ -44,7 +54,8 @@ class piece(pygame.sprite.Group):
         self.shape = shape
         self.color = color
         for i in range(4):
-            self.add(block(color,x+i,y,1,1)) #drawing I piece
+            # Drawing specified piece now
+            self.add(block(color,x+buildPiece[shape][i][0],y+buildPiece[shape][i][1],1,1))
 
     def move(self,direc):
         for blk in self.sprites():
@@ -85,7 +96,7 @@ fullspritelist.add(testBlock)
 fullspritelist.draw(DISPLAYSURF)
 
 # testing out piece class
-testPiece = piece(BLUE,3,3,'I')
+testPiece = piece(BLUE,3,3,'J')
 testPiece.draw(DISPLAYSURF)
 
 
