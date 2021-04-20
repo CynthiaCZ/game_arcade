@@ -42,7 +42,7 @@ font_type = pygame.font.SysFont("franklingothicmedium", 23)
  ## and draws a rectangle of the same size in all the places that the snake has been
 def my_snake(snake_block, snake_list):
     for x in snake_list:
-        pygame.draw.rect(display, black, [x[0], x[1], snake_block, snake_block])
+        pygame.draw.rect(display, black, [x[0], x[1], 10, 10])
  
  ## the main game loop - where the meat of the game logic lives
 def game_loop():
