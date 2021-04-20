@@ -16,6 +16,7 @@ class MySprite(pygame.sprite.Sprite):
         # repeat this 4 times for 4 directions
         # change img_list to 4 lists of 4 for the different directions
         # and replace "self" with "down", left", right", or "up"
+        #### this doesn't work ####
         img_list = ["D1", "D2", "D3", "D4", "L1", "L2", "L3", "L4", "R1", "R2", "R3", "R4", "U1", "U2", "U3", "U4"]
         self.images = []
         for item in img_list:
