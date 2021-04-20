@@ -21,6 +21,43 @@ buildPiece = {
     'Z':[[0,0],[0,-1],[-1,-1],[1,0]],
 }
 
+rotatePiece = {
+    'I':[[[0,-1],[1,0],[2,1],[-1,2]],
+        [[-1,0],[0,1],[1,2],[-2,-1]],
+        [[0,-1],[-1,0],[-2,1],[1,-2]],
+        [[1,0],[0,-1],[-1,-2],[2,1]]],
+        # -------------------------
+    'J':[[[0,0],[-1,0],[-1,-1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]]],
+        # -------------------------
+    'L':[[[0,0],[-1,0],[1,0],[1,-1]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]]],
+        # -------------------------
+    'O':[[[0,0],[-1,0],[-1,-1],[0,-1]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]]],
+        # -------------------------
+    'S':[[[0,0],[-1,0],[0,-1],[-1,-1]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]]],
+        # -------------------------
+    'T':[[[0,0],[-1,0],[0,-1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]]],
+        # -------------------------
+    'Z':[[[0,0],[0,-1],[-1,-1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]],
+        [[0,-2],[1,0],[1,1],[1,0]]]
+}
+
 def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
     for x in range(0, gridWidth, blockSize):
         for y in range(0, gridHeight, blockSize):
@@ -54,7 +91,6 @@ class piece(pygame.sprite.Group):
         self.shape = shape
         self.color = color
         for i in range(4):
-            # Drawing specified piece now
             self.add(block(color,x+buildPiece[shape][i][0],y+buildPiece[shape][i][1],1,1))
 
     def move(self,direc):
@@ -64,7 +100,16 @@ class piece(pygame.sprite.Group):
             else:
                 mag = 1
             blk.move(direc,mag)
+    def rotate(self,rotation):
+        mvmt = rotatePiece[self.shape][rotation]
+        i = 0
+        for blk in self.sprites():
+            blk.rect.move_ip(mvmt[i][0]*blockSize,mvmt[i][1]*blockSize)
+            i += 1
             
+
+
+
 # Initialize program
 pygame.init()
  
@@ -89,32 +134,27 @@ DISPLAYSURF = pygame.display.set_mode((gridWidth,gridHeight))
 DISPLAYSURF.fill(WHITE)
 pygame.display.set_caption("Example")
 
-# Testing out block class
-testBlock = block(RED,5,10,1,1)
-fullspritelist = pygame.sprite.Group()
-fullspritelist.add(testBlock)
-fullspritelist.draw(DISPLAYSURF)
+# # Testing out block class
+# testBlock = block(RED,5,10,1,1)
+# fullspritelist = pygame.sprite.Group()
+# fullspritelist.add(testBlock)
+# fullspritelist.draw(DISPLAYSURF)
+count = 0
+rotation= 0
 
 # testing out piece class
-testPiece = piece(BLUE,3,3,'J')
+testPiece = piece(BLUE,3,3,'I')
 testPiece.draw(DISPLAYSURF)
 
-
 # Beginning Game Loop
-count = 0
 while True:
     count += 1
-    print(count) # to make sure not frozen
-
-    if count%5 == 0:
-        testBlock.move('D',1)
+    # print(count)
+    if (count%2)==0:
         testPiece.move('D')
         DISPLAYSURF.fill(WHITE)
         drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
         testPiece.draw(DISPLAYSURF)
-        testBlock.draw(DISPLAYSURF)
-
-    # Necessary board updates, from pygame tutorial
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == KEYDOWN:
@@ -122,11 +162,14 @@ while True:
                 print('LEFT')
                 testPiece.move('L')
             if event.key == K_RIGHT:
-                print('RIGHT')
                 testPiece.move('R')
+            if event.key == K_UP:
+                testPiece.rotate(rotation)
+                rotation += 1
+                rotation = rotation % 4
+                print(rotation)
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
    
     FramePerSec.tick(FPS)
-
