@@ -124,7 +124,7 @@ def gameLoop():
  
         pygame.display.update()
         ##simple collision detection - if the location of the snake head is the same as the
-        ## location of the food, a new food is made the the length of the snake goes up 
+        ## location of the food, a new food is made the the length of the snake goes up by 1
         if x1 == foodx and y1 == foody:
             foodx = round(random.randrange(0, dis_width - snake_block) / 10.0) * 10.0
             foody = round(random.randrange(0, dis_height - snake_block) / 10.0) * 10.0
