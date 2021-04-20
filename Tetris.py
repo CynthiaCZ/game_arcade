@@ -38,40 +38,40 @@ buildPiece = {
 }
 
 rotatePiece = {
-    'I':[[[0,-1],[1,0],[2,1],[-1,2]],
-        [[-1,0],[0,1],[1,2],[-2,-1]],
-        [[0,-1],[-1,0],[-2,1],[1,-2]],
-        [[1,0],[0,-1],[-1,-2],[2,1]]],
+    'I':[[[2,-1],[1,0],[0,1],[-1,2]],
+        [[1,2],[0,1],[-1,0],[-2,-1]],
+        [[-2,1],[-1,0],[0,-1],[1,-2]],
+        [[-1,-2],[0,-1],[1,0],[2,1]]],
         # -------------------------
-    'J':[[[0,0],[-1,0],[-1,-1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]]],
+    'J':[[[2,0],[1,-1],[0,0],[-1,1]],
+        [[0,2],[1,1],[0,0],[-1,-1]],
+        [[-2,0],[-1,1],[0,0],[1,-1]],
+        [[0,-2],[-1,-1],[0,0],[1,1]]],
         # -------------------------
-    'L':[[[0,0],[-1,0],[1,0],[1,-1]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]]],
+    'L':[[[1,-1],[0,0],[-1,1],[0,2]],
+        [[1,1],[0,0],[-1,-1],[-2,0]],
+        [[-1,1],[0,0],[1,-1],[0,-2]],
+        [[-1,-1],[0,0],[1,1],[2,0]]],
         # -------------------------
-    'O':[[[0,0],[-1,0],[-1,-1],[0,-1]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]]],
+    'O':[[[0,0],[0,0],[0,0],[0,0]],
+        [[0,0],[0,0],[0,0],[0,0]],
+        [[0,0],[0,0],[0,0],[0,0]],
+        [[0,0],[0,0],[0,0],[0,0]]],
         # -------------------------
-    'S':[[[0,0],[-1,0],[0,-1],[-1,-1]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]]],
+    'S':[[[1,-1],[0,0],[1,1],[0,2]],
+        [[1,1],[0,0],[-1,1],[-2,0]],
+        [[-1,1],[0,0],[-1,-1],[0,-2]],
+        [[-1,-1],[0,0],[1,-1],[2,0]]],
         # -------------------------
-    'T':[[[0,0],[-1,0],[0,-1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]]],
+    'T':[[[1,-1],[0,0],[1,1],[-1,1]],
+        [[1,1],[0,0],[-1,1],[-1,-1]],
+        [[-1,1],[0,0],[-1,-1],[1,-1]],
+        [[-1,-1],[0,0],[1,-1],[1,1]]],
         # -------------------------
-    'Z':[[[0,0],[0,-1],[-1,-1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]],
-        [[0,-2],[1,0],[1,1],[1,0]]]
+    'Z':[[[2,0],[1,1],[0,0],[-1,1]],
+        [[0,2],[-1,1],[0,0],[-1,-1]],
+        [[-2,0],[-1,-1],[0,0],[1,-1]],
+        [[0,-2],[1,-1],[0,0],[1,1]]]
 }
 
 def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
@@ -130,7 +130,7 @@ class piece(pygame.sprite.Group):
 pygame.init()
  
 # Assign FPS a value
-FPS = 30
+FPS = 60
 FramePerSec = pygame.time.Clock()
  
 # Setting up color objects
@@ -158,34 +158,36 @@ rotation= 0
 # testPiece.draw(DISPLAYSURF)
 running = True
 for key in buildPiece.keys():
+    print(key)
     testPiece = piece(key,3,3)
     running = True
+    rotation = 0
     # Beginning Game Loop
     while running:
         count += 1
         # print(count)
-        if (count%2)==0:
+        if (count%5)==0:
             testPiece.move('D')
             DISPLAYSURF.fill(WHITE)
             drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
             testPiece.draw(DISPLAYSURF)
+        else:
+            for event in pygame.event.get():
+                if event.type == KEYDOWN:
+                    if event.key == K_LEFT:
+                        print('LEFT')
+                        testPiece.move('L')
+                    if event.key == K_RIGHT:
+                        testPiece.move('R')
+                    if event.key == K_DOWN:
+                        running = False
+                    if event.key == K_UP:
+                        testPiece.rotate(rotation)
+                        rotation += 1
+                        rotation = rotation % 4
+                        print(rotation)
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
         pygame.display.update()
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_LEFT:
-                    print('LEFT')
-                    testPiece.move('L')
-                if event.key == K_RIGHT:
-                    testPiece.move('R')
-                if event.key == K_DOWN:
-                    running = False
-                if event.key == K_UP:
-                    testPiece.rotate(rotation)
-                    rotation += 1
-                    rotation = rotation % 4
-                    print(rotation)
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-    
         FramePerSec.tick(FPS)
