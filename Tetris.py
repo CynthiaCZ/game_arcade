@@ -11,12 +11,6 @@ from pygame.locals import (
     QUIT,
 )
 
-BLUE  = (0, 0, 255)
-RED   = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
 colorPiece = {
     'I': (0, 255, 255),
     'J': (0, 0, 255),
@@ -97,6 +91,8 @@ class block(pygame.sprite.Sprite):
             self.rect.move_ip(mag,0)
         elif (direc == 'D'):
             self.rect.move_ip(0,mag)
+        elif (direc == 'U'):
+            self.rect.move_ip(0,-mag)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect) 
@@ -116,6 +112,7 @@ class piece(pygame.sprite.Group):
             else:
                 mag = 1
             blk.move(direc,mag)
+
     def rotate(self,rotation):
         mvmt = rotatePiece[self.shape][rotation]
         i = 0
@@ -123,6 +120,16 @@ class piece(pygame.sprite.Group):
             blk.rect.move_ip(mvmt[i][0]*blockSize,mvmt[i][1]*blockSize)
             i += 1
             
+class board(pygame.sprite.Group):
+    def __init__(self,color):
+        super().__init__()
+        for i in range(gridWidth//blockSize):
+            self.add(block(color,i,20,1,1))
+    
+    def addPiece(self,piece):
+        for blk in piece.sprites():
+            self.add(blk)
+
 
 
 
@@ -150,6 +157,8 @@ DISPLAYSURF = pygame.display.set_mode((gridWidth,gridHeight))
 DISPLAYSURF.fill(WHITE)
 pygame.display.set_caption("Example")
 
+gameBoard = board(BLUE)
+
 count = 0
 rotation= 0
 
@@ -166,11 +175,18 @@ for key in buildPiece.keys():
     while running:
         count += 1
         # print(count)
-        if (count%5)==0:
+        if (count%2)==0:
             testPiece.move('D')
+            for sprite in testPiece.sprites():
+                if pygame.sprite.spritecollideany(sprite,gameBoard):
+                    testPiece.move('U')
+                    gameBoard.addPiece(testPiece)
+                    running = False
             DISPLAYSURF.fill(WHITE)
             drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
             testPiece.draw(DISPLAYSURF)
+            gameBoard.draw(DISPLAYSURF)
+            
         else:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
