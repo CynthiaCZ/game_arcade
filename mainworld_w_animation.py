@@ -123,7 +123,7 @@ def main():
                     my_sprite.control(0 ,-10)
 
             # call game functions when player sprite collide with game sprite
-            # for gamesprite in pygame.sprite.spritecollide(my_sprite,game1list,False):
+            for gamesprite in pygame.sprite.spritecollide(my_sprite,game1list,False):
                 crossingroad()
             # for gamesprite in pygame.sprite.spritecollide(my_sprite,game2list,False):
                 # call function for snake
