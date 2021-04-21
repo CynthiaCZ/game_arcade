@@ -68,11 +68,22 @@ rotatePiece = {
         [[0,-2],[1,-1],[0,0],[1,1]]]
 }
 
+oppDirec = {
+    'L':'R',
+    'R':'L',
+    'U':'D',
+    'D':'U'
+}
+
 def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
     for x in range(0, gridWidth, blockSize):
         for y in range(0, gridHeight, blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(surface, color, rect, 1)
+
+
+
+
 
 class block(pygame.sprite.Sprite):
     def __init__(self, color, x, y, w, h):
@@ -102,15 +113,12 @@ class piece(pygame.sprite.Group):
         super().__init__()
         self.shape = shape
         self.color = colorPiece[shape]
+        self.rotation = 0
         for i in range(4):
             self.add(block(self.color,x+buildPiece[shape][i][0],y+buildPiece[shape][i][1],1,1))
 
-    def move(self,direc):
+    def move(self,direc,mag):
         for blk in self.sprites():
-            if direc == 'L' or direc == 'R':
-                mag = 1*blockSize
-            else:
-                mag = 1
             blk.move(direc,mag)
 
     def rotate(self,rotation):
@@ -119,22 +127,28 @@ class piece(pygame.sprite.Group):
         for blk in self.sprites():
             blk.rect.move_ip(mvmt[i][0]*blockSize,mvmt[i][1]*blockSize)
             i += 1
+
+    def checkBoundary(self,board,direc,mag):
+        self.move(direc,mag)
+        for sprite in self.sprites():
+            if pygame.sprite.spritecollideany(sprite,board):
+                self.move(oppDirec[direc],-mag)
+                return True
+        return False
             
 class board(pygame.sprite.Group):
     def __init__(self,color):
         super().__init__()
         for i in range(gridWidth//blockSize):
-            self.add(block(color,i,20,1,1))
+            self.add(block(color,i,gridHeight//blockSize-1/blockSize,1,1))
     
     def addPiece(self,piece):
         for blk in piece.sprites():
             self.add(blk)
 
-
-
-
 # Initialize program
 pygame.init()
+pygame.key.set_repeat(300,150)
  
 # Assign FPS a value
 FPS = 60
@@ -150,7 +164,7 @@ WHITE = (255, 255, 255)
 # Initializing useful variables
 blockSize = 40
 gridWidth = 10*blockSize
-gridHeight = 20*blockSize
+gridHeight = (20-1)*blockSize
  
 # Setup a 300x300 pixel display with caption
 DISPLAYSURF = pygame.display.set_mode((gridWidth,gridHeight))
@@ -160,50 +174,46 @@ pygame.display.set_caption("Example")
 gameBoard = board(BLUE)
 
 count = 0
-rotation= 0
 
-# # testing out piece class
-# testPiece = piece('I',3,3)
-# testPiece.draw(DISPLAYSURF)
 running = True
 for key in buildPiece.keys():
     print(key)
     testPiece = piece(key,3,3)
     running = True
-    rotation = 0
+
     # Beginning Game Loop
     while running:
         count += 1
         # print(count)
+
+        keys = pygame.key.get_pressed() # checking pressed keys
+        if keys[pygame.K_SPACE]:
+            running = False
+        
         if (count%2)==0:
-            testPiece.move('D')
-            for sprite in testPiece.sprites():
-                if pygame.sprite.spritecollideany(sprite,gameBoard):
-                    testPiece.move('U')
-                    gameBoard.addPiece(testPiece)
-                    running = False
-            DISPLAYSURF.fill(WHITE)
-            drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
-            testPiece.draw(DISPLAYSURF)
-            gameBoard.draw(DISPLAYSURF)
+            if testPiece.checkBoundary(gameBoard,'D',1):
+                gameBoard.addPiece(testPiece)
+                running = False
+
+        DISPLAYSURF.fill(WHITE)
+        drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
+        testPiece.draw(DISPLAYSURF)
+        gameBoard.draw(DISPLAYSURF)
             
-        else:
-            for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                    if event.key == K_LEFT:
-                        print('LEFT')
-                        testPiece.move('L')
-                    if event.key == K_RIGHT:
-                        testPiece.move('R')
-                    if event.key == K_DOWN:
-                        running = False
-                    if event.key == K_UP:
-                        testPiece.rotate(rotation)
-                        rotation += 1
-                        rotation = rotation % 4
-                        print(rotation)
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_LEFT:
+                    testPiece.checkBoundary(gameBoard,'L',blockSize)
+                if event.key == K_RIGHT:
+                    testPiece.checkBoundary(gameBoard,'R',blockSize)
+                if event.key == K_DOWN:
+                    testPiece.checkBoundary(gameBoard,'D',3)
+                if event.key == K_UP:
+                    testPiece.rotate(testPiece.rotation)
+                    testPiece.rotation += 1
+                    testPiece.rotation = testPiece.rotation % 4
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
         pygame.display.update()
         FramePerSec.tick(FPS)
