@@ -111,21 +111,6 @@ class block(pygame.sprite.Sprite):
     def draw(self, surface):
         surface.blit(self.image, self.rect) 
 
-    # def fastFall(self,board):
-    #     falling = 1
-    #     while falling:
-    #         self.move('D',1)
-    #         if pygame.sprite.spritecollideany(self,board):
-    #             self.move('D',-1)
-    #             falling = 0
-
-    # def checkBoundary(self,board,direc,mag):
-    #     self.move(direc,mag)
-    #     if pygame.sprite.spritecollideany(self,board):
-    #         self.move(direc,-mag)
-    #         return True
-    #     return False
-
 class piece(pygame.sprite.Group):
     def __init__(self,shape,x,y):
         super().__init__()
@@ -143,26 +128,46 @@ class piece(pygame.sprite.Group):
         for blk in self.sprites():
             blk.smoothMove(direc)
 
-    def rotate(self,rotation):
-        mvmt = rotatePiece[self.shape][rotation]
+    def movePiece(self,board,direc,mag):
+        self.move(direc,mag)
+        if self.checkBoundary(board):
+            self.move(direc,-mag)
+            self.smoothMove(direc)
+            return True
+
+    def rotatePiece(self,board,direc):
+        self.rotate(direc)
+        if self.checkBoundary(board):
+            self.rotate(-direc)
+            return True
+
+    def rotate(self,direc):
+        mag = 1        
+        if direc < 0:
+            self.rotation += direc
+            if self.rotation < 0:
+                self.rotation = 3
+            mag = -1
+        self.rotation = self.rotation % 4
+        print(self.rotation)
+        mvmt = rotatePiece[self.shape][self.rotation]
         i = 0
         for blk in self.sprites():
-            blk.rect.move_ip(mvmt[i][0]*blockSize,mvmt[i][1]*blockSize)
+            blk.rect.move_ip(mag*mvmt[i][0]*blockSize,mag*mvmt[i][1]*blockSize)
             i += 1
+        if direc > 0:
+            self.rotation += direc
 
-    def checkBoundary(self,board,direc,mag):
-        self.move(direc,mag)
+    def checkBoundary(self,board):
         for sprite in self.sprites():
             if pygame.sprite.spritecollideany(sprite,board):
-                self.move(direc,-mag)
-                self.smoothMove(direc)
                 return True
         return False
 
     def fastFall(self,board):
         falling = 1
         while falling:
-            if self.checkBoundary(board,'D',1):
+            if self.movePiece(board,'D',1):
                 falling = 0
             
 class board(pygame.sprite.Group):
@@ -260,7 +265,7 @@ while running:
     keys = pygame.key.get_pressed() # checking pressed keys
     
     if (count%5)==0:
-        if activePiece.checkBoundary(gameBoard,'D',3):
+        if activePiece.movePiece(gameBoard,'D',3):
             gameBoard.addPiece(activePiece)
             createPiece = 1
 
@@ -272,15 +277,17 @@ while running:
     for event in pygame.event.get():
         if event.type == KEYDOWN:
             if event.key == K_LEFT:
-                activePiece.checkBoundary(gameBoard,'L',blockSize)
+                activePiece.movePiece(gameBoard,'L',blockSize)
             if event.key == K_RIGHT:
-                activePiece.checkBoundary(gameBoard,'R',blockSize)
+                activePiece.movePiece(gameBoard,'R',blockSize)
             if event.key == K_DOWN:
-                activePiece.checkBoundary(gameBoard,'D',3+5)
+                activePiece.movePiece(gameBoard,'D',3+5)
             if event.key == K_UP:
-                activePiece.rotate(activePiece.rotation)
-                activePiece.rotation += 1
-                activePiece.rotation = activePiece.rotation % 4
+                activePiece.rotatePiece(gameBoard,1)
+                # activePiece.rotation += 1
+                # activePiece.rotation = activePiece.rotation % 4
+            if event.key == K_ESCAPE:
+                activePiece.rotatePiece(gameBoard,-1)
             if event.key == K_SPACE:
                 activePiece.fastFall(gameBoard)
         if event.type == QUIT:
