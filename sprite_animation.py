@@ -64,7 +64,7 @@ game3list = pygame.sprite.Group()
 game3list.add(game3)
 
 game4 = gamesprite(red, 60, 100)
-game4.rect.x = 300
+game4.rect.x = 400
 game4.rect.y = 200
 game4list = pygame.sprite.Group()
 game4list.add(game4)
