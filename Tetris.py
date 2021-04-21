@@ -80,7 +80,7 @@ class block(pygame.sprite.Sprite):
         super().__init__() #Calling parent class
         self.image = pygame.Surface([w*blockSize, h*blockSize])
         self.image.fill(color)
-        pygame.draw.rect(self.image, BLACK, (0,0,w*blockSize,h*blockSize),2)
+        pygame.draw.rect(self.image, BLACK, (0,0,w*blockSize-1,h*blockSize-1),2)
         self.rect = self.image.get_rect()
         self.rect.x = x*blockSize
         self.rect.y = y*blockSize
@@ -142,8 +142,29 @@ class board(pygame.sprite.Group):
             self.add(block(color,-1,i,1,1))
     
     def addPiece(self,piece):
+        yChecks = set()
         for blk in piece.sprites():
             self.add(blk)
+            yChecks.add(blk.rect.y)
+        self.checkLine(yChecks)
+    
+    def checkLine(self,checkSet):
+        print('checking line')
+        numLineBlocks = gridWidth//blockSize
+        for y in checkSet:
+            checkBlocks = set()
+            for sprite in self.sprites():
+                if sprite.rect.y == y: # and 0 < sprite.rect.x < gridWidth:
+                    checkBlocks.add(sprite)
+            if len(checkBlocks) == numLineBlocks:
+                self.clearLine(checkBlocks)
+
+    def clearLine(self,clearSet):
+        print('clearing line')
+        for sprite in clearSet:
+            self.remove(sprite)
+
+
 
 # Initialize program
 pygame.init()
