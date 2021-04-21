@@ -18,6 +18,8 @@ from pygame.locals import (
 #Initializing imported modules
 pg.init()
 
+pg.display.set_caption('Crossing Road - Dylan Ines')
+
 #Defining colors to be used to create background and sprites
 black = (0,0,0)
 yellow = (255,255,0)
