@@ -125,6 +125,12 @@ class piece(pygame.sprite.Group):
                 self.move(direc,-mag)
                 return True
         return False
+
+    def fastFall(self,board):
+        falling = 1
+        while falling:
+            if self.checkBoundary(board,'D',1):
+                falling = 0
             
 class board(pygame.sprite.Group):
     def __init__(self,color):
@@ -204,7 +210,7 @@ for key in buildPiece.keys():
                     testPiece.rotation += 1
                     testPiece.rotation = testPiece.rotation % 4
                 if event.key == K_SPACE:
-                    running = False
+                    testPiece.fastFall(gameBoard)
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
