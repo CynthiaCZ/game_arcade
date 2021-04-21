@@ -1,5 +1,6 @@
 import pygame
 from rhythm_game import * # import rhythm game
+from crossingroad import * #import crossing road
 
 # sprite animation code is adapted from https://www.simplifiedpython.net/pygame-sprite-animation-tutorial/
 # sprite movement code is adapted from https://opensource.com/article/17/12/game-python-moving-player
@@ -123,7 +124,7 @@ def main():
 
             # call game functions when player sprite collide with game sprite
             # for gamesprite in pygame.sprite.spritecollide(my_sprite,game1list,False):
-                # call function for crossing road
+                crossingroad()
             # for gamesprite in pygame.sprite.spritecollide(my_sprite,game2list,False):
                 # call function for snake
             for gamesprite in pygame.sprite.spritecollide(my_sprite,game3list,False):
