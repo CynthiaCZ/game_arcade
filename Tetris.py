@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 
 #Importing key inputs that will be used for sprite navigation
 from pygame.locals import (
@@ -11,6 +11,8 @@ from pygame.locals import (
     KEYDOWN,
     QUIT,
 )
+
+pieceNames = ['I','J','L','O','S','T','Z']
 
 colorPiece = {
     'I': (0, 255, 255),
@@ -87,17 +89,42 @@ class block(pygame.sprite.Sprite):
         self.movable = movable
 
     def move(self,direc,mag):
-        if (direc == 'L'):
-            self.rect.move_ip(-mag,0)
-        elif (direc =='R'):
-            self.rect.move_ip(mag,0)
-        elif (direc == 'D'):
-            self.rect.move_ip(0,mag)
-        elif (direc == 'U'):
-            self.rect.move_ip(0,-mag)
+        if self.movable:
+            if (direc == 'L'):
+                self.rect.move_ip(-mag,0)
+            elif (direc =='R'):
+                self.rect.move_ip(mag,0)
+            elif (direc == 'D'):
+                self.rect.move_ip(0,mag)
+            elif (direc == 'U'):
+                self.rect.move_ip(0,-mag)
+            
+    def smoothMove(self,direc):
+        if direc == 'L' or direc == 'R':
+            if self.rect.x % blockSize != 0:
+                self.rect.x = int(round(self.rect.x/blockSize)*blockSize)
+                print(self.rect.x)
+        if direc == 'D' or direc == 'U':
+            if self.rect.y % blockSize != 0:
+                self.rect.y = int(round(self.rect.y/blockSize)*blockSize)
 
     def draw(self, surface):
         surface.blit(self.image, self.rect) 
+
+    # def fastFall(self,board):
+    #     falling = 1
+    #     while falling:
+    #         self.move('D',1)
+    #         if pygame.sprite.spritecollideany(self,board):
+    #             self.move('D',-1)
+    #             falling = 0
+
+    # def checkBoundary(self,board,direc,mag):
+    #     self.move(direc,mag)
+    #     if pygame.sprite.spritecollideany(self,board):
+    #         self.move(direc,-mag)
+    #         return True
+    #     return False
 
 class piece(pygame.sprite.Group):
     def __init__(self,shape,x,y):
@@ -112,6 +139,10 @@ class piece(pygame.sprite.Group):
         for blk in self.sprites():
             blk.move(direc,mag)
 
+    def smoothMove(self,direc):
+        for blk in self.sprites():
+            blk.smoothMove(direc)
+
     def rotate(self,rotation):
         mvmt = rotatePiece[self.shape][rotation]
         i = 0
@@ -124,6 +155,7 @@ class piece(pygame.sprite.Group):
         for sprite in self.sprites():
             if pygame.sprite.spritecollideany(sprite,board):
                 self.move(direc,-mag)
+                self.smoothMove(direc)
                 return True
         return False
 
@@ -134,10 +166,10 @@ class piece(pygame.sprite.Group):
                 falling = 0
             
 class board(pygame.sprite.Group):
-    def __init__(self,color):
+    def __init__(self,color,offsetX=0,offsetY=0):
         super().__init__()
         for i in range(gridWidth//blockSize):
-            self.add(block(color,i,gridHeight//blockSize-1/blockSize,1,1,False))
+            self.add(block(color,i,gridHeight//blockSize,1,1,False))
         for i in range(gridHeight//blockSize):
             self.add(block(color,gridWidth//blockSize,i,1,1,False))
             self.add(block(color,-1,i,1,1,False))
@@ -147,28 +179,37 @@ class board(pygame.sprite.Group):
         for blk in piece.sprites():
             self.add(blk)
             yChecks.add(blk.rect.y)
+        print(yChecks)
         self.checkLine(yChecks)
     
     def checkLine(self,checkSet):
-        print('checking line')
-        numLineBlocks = gridWidth//blockSize
-        for y in checkSet:
+        # print('checking line')
+        numLineBlocks = gridBlockWidth+2
+        
+        checkList = sorted(list(checkSet))
+
+        while len(checkList) > 0:
+            y = checkList.pop(0)
             checkBlocks = set()
             for sprite in self.sprites():
                 if sprite.rect.y == y: # and 0 < sprite.rect.x < gridWidth:
                     checkBlocks.add(sprite)
-            if len(checkBlocks) == numLineBlocks:
-                self.clearLine(checkBlocks)
+            if len(checkBlocks) >= numLineBlocks:
+                # self.clearLine(checkBlocks)
+                for sprite in checkBlocks:
+                    if sprite.movable:
+                        self.remove(sprite)
+                for sprite in self.sprites():
+                    if sprite.movable and sprite.rect.y <= y:
+                        sprite.move('D',blockSize)
 
     def clearLine(self,clearSet):
-        print('clearing line')
+        # print('clearing line')
         for sprite in clearSet:
             self.remove(sprite)
         for sprite in self.sprites():
             if sprite.movable:
                 sprite.move('D',blockSize)
-
-
 
 # Initialize program
 pygame.init()
@@ -187,57 +228,63 @@ WHITE = (255, 255, 255)
 
 # Initializing useful variables
 blockSize = 40
-gridWidth = 10*blockSize
-gridHeight = (20-1)*blockSize
+gridBlockWidth = 10
+gridBlockHeight = 20-1
+gridWidth = gridBlockWidth*blockSize
+gridHeight = gridBlockHeight*blockSize
  
 # Setup a 300x300 pixel display with caption
-DISPLAYSURF = pygame.display.set_mode((gridWidth+blockSize,gridHeight))
+DISPLAYSURF = pygame.display.set_mode((gridWidth+2*blockSize,gridHeight+2*blockSize))
 DISPLAYSURF.fill(WHITE)
 pygame.display.set_caption("Example")
 
-gameBoard = board(BLUE)
+gameBoard = board(BLACK)
 
 count = 0
+pieceCount = 0
+
 
 running = True
-for key in buildPiece.keys():
-    print(key)
-    testPiece = piece(key,3,3)
-    running = True
+createPiece = 1
+# Beginning Game Loop
+while running:
+    count += 1
+    # print(count)
 
-    # Beginning Game Loop
-    while running:
-        count += 1
-        # print(count)
+    if createPiece:
+        # activePiece = piece(random.choice(pieceNames),3,0)
+        activePiece = piece(pieceNames[pieceCount % len(pieceNames)],3,0)
+        pieceCount += 1
+        createPiece = 0
 
-        keys = pygame.key.get_pressed() # checking pressed keys
+    keys = pygame.key.get_pressed() # checking pressed keys
+    
+    if (count%5)==0:
+        if activePiece.checkBoundary(gameBoard,'D',3):
+            gameBoard.addPiece(activePiece)
+            createPiece = 1
+
+    DISPLAYSURF.fill(WHITE)
+    drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
+    activePiece.draw(DISPLAYSURF)
+    gameBoard.draw(DISPLAYSURF)
         
-        if (count%2)==0:
-            if testPiece.checkBoundary(gameBoard,'D',1):
-                gameBoard.addPiece(testPiece)
-                running = False
-
-        DISPLAYSURF.fill(WHITE)
-        drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
-        testPiece.draw(DISPLAYSURF)
-        gameBoard.draw(DISPLAYSURF)
-            
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_LEFT:
-                    testPiece.checkBoundary(gameBoard,'L',blockSize)
-                if event.key == K_RIGHT:
-                    testPiece.checkBoundary(gameBoard,'R',blockSize)
-                if event.key == K_DOWN:
-                    testPiece.checkBoundary(gameBoard,'D',3)
-                if event.key == K_UP:
-                    testPiece.rotate(testPiece.rotation)
-                    testPiece.rotation += 1
-                    testPiece.rotation = testPiece.rotation % 4
-                if event.key == K_SPACE:
-                    testPiece.fastFall(gameBoard)
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-        pygame.display.update()
-        FramePerSec.tick(FPS)
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_LEFT:
+                activePiece.checkBoundary(gameBoard,'L',blockSize)
+            if event.key == K_RIGHT:
+                activePiece.checkBoundary(gameBoard,'R',blockSize)
+            if event.key == K_DOWN:
+                activePiece.checkBoundary(gameBoard,'D',3+5)
+            if event.key == K_UP:
+                activePiece.rotate(activePiece.rotation)
+                activePiece.rotation += 1
+                activePiece.rotation = activePiece.rotation % 4
+            if event.key == K_SPACE:
+                activePiece.fastFall(gameBoard)
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+    pygame.display.update()
+    FramePerSec.tick(FPS)
