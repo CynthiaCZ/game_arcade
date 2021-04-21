@@ -35,8 +35,51 @@ class MySprite(pygame.sprite.Sprite):
             self.index = 0
         self.image = self.images[self.index]
 
-# detection of collision
-# pygame.Rect.colliderect or pygame.sprite.spritecollide 
+#Creating class that will be used to create sprites that mysprite can collide with to choose a specific game
+class gamesprite(pygame.sprite.Sprite):
+
+    def __init__(self, color, x, y):
+        super().__init__() #Calling parent class
+        self.image = pygame.Surface([x, y])
+        pygame.draw.rect(self.image, color, [0, 0, x, y])
+        self.rect = self.image.get_rect()
+
+#Creating 4 different sprites that, when collided with, will call the function of that specific game
+game1 = gamesprite(red, 60, 100)
+game1.rect.x = 100
+game1.rect.y = 200
+game1list = pygame.sprite.Group()
+game1list.add(game1)
+
+game2 = gamesprite(red, 60, 100)
+game2.rect.x = 200
+game2.rect.y = 200
+game2list = pygame.sprite.Group()
+game2list.add(game2)
+
+game3 = gamesprite(red, 60, 100)
+game3.rect.x = 300
+game3.rect.y = 200
+game3list = pygame.sprite.Group()
+game3list.add(game3)
+
+game4 = gamesprite(red, 60, 100)
+game4.rect.x = 300
+game4.rect.y = 200
+game4list = pygame.sprite.Group()
+game4list.add(game4)
+
+for gamesprite in pygame.sprite.spritecollide(Mysprite,game1list,False):
+    #CALL GAME 1 FUNCTION
+
+for gamesprite in pygame.sprite.spritecollide(Mysprite,game2list,False):
+    #CALL GAME 2 FUNCTION
+
+for gamesprite in pygame.sprite.spritecollide(Mysprite,game3list,False):
+    #CALL GAME 3 FUNCTION
+
+for gamesprite in pygame.sprite.spritecollide(Mysprite,game4list,False):
+    #CALL GAME 4 FUNCTION
 
 # main loop
 def main():
@@ -52,7 +95,7 @@ def main():
                 pygame.quit()
                 quit()
 
-            keypress = pg.key.get_pressed()        
+            keypress = pygame.key.get_pressed()        
             if keypress[K_LEFT]:
                 self.rect.x -= 2
             if keypress[K_RIGHT]:
