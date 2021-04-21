@@ -8,6 +8,7 @@ from pygame.locals import (
     K_RIGHT,
     K_SPACE,
     K_ESCAPE,
+    K_RETURN,
     KEYDOWN,
     QUIT,
 )
@@ -76,6 +77,14 @@ def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
         for y in range(0, gridHeight, blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(surface, color, rect, 1)
+
+# def drawContainer(surface,color,x,y):
+#     pygame.draw.rect
+
+
+# def holdPiece(activePiece,heldPiece):
+#     if len(heldPiece.sprites()) == 0:
+#         heldPiece = piece(activePiece.shape,gridWidth+100,gridHeight/2+100)
 
 class block(pygame.sprite.Sprite):
     def __init__(self, color, x, y, w, h, movable = True):
@@ -230,6 +239,7 @@ RED   = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+GRAY = (127,127,127)
 
 # Initializing useful variables
 blockSize = 40
@@ -239,40 +249,57 @@ gridWidth = gridBlockWidth*blockSize
 gridHeight = gridBlockHeight*blockSize
  
 # Setup a 300x300 pixel display with caption
-DISPLAYSURF = pygame.display.set_mode((gridWidth+2*blockSize,gridHeight+2*blockSize))
+DISPLAYSURF = pygame.display.set_mode((2*gridWidth,gridHeight))
 DISPLAYSURF.fill(WHITE)
 pygame.display.set_caption("Example")
 
-gameBoard = board(BLACK)
+gameBoard = board(GRAY)
 
 count = 0
+countSpeed = 50
 pieceCount = 0
+nextActive = ''
+nextHeld = ''
 
-
+# Important game flags
 running = True
 createPiece = 1
+heldPiece = pygame.sprite.Group()
+
 # Beginning Game Loop
 while running:
     count += 1
     # print(count)
 
     if createPiece:
-        # activePiece = piece(random.choice(pieceNames),3,0)
-        activePiece = piece(pieceNames[pieceCount % len(pieceNames)],3,0)
+        # if len(nextActive) > 0:
+        #     activePiece = piece(nextActive,3,0)
+        # else:
+        activePiece = piece(random.choice(pieceNames),3,0)
+        # activePiece = piece(pieceNames[pieceCount % len(pieceNames)],3,0)
         pieceCount += 1
+        # count = 49
         createPiece = 0
 
     keys = pygame.key.get_pressed() # checking pressed keys
+
+    if keys[K_DOWN]:
+        countSpeed = 25
+    else:
+        countSpeed = 50
     
-    if (count%5)==0:
-        if activePiece.movePiece(gameBoard,'D',3):
+    if (count%countSpeed)==0:
+        if activePiece.movePiece(gameBoard,'D',blockSize):
             gameBoard.addPiece(activePiece)
             createPiece = 1
 
     DISPLAYSURF.fill(WHITE)
+    pygame.draw.rect(DISPLAYSURF,GRAY,pygame.Rect((gridBlockWidth+3)*blockSize,(gridBlockHeight//2+1)*blockSize,6*blockSize,4*blockSize))
     drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
     activePiece.draw(DISPLAYSURF)
+    heldPiece.draw(DISPLAYSURF)
     gameBoard.draw(DISPLAYSURF)
+    
         
     for event in pygame.event.get():
         if event.type == KEYDOWN:
@@ -280,8 +307,8 @@ while running:
                 activePiece.movePiece(gameBoard,'L',blockSize)
             if event.key == K_RIGHT:
                 activePiece.movePiece(gameBoard,'R',blockSize)
-            if event.key == K_DOWN:
-                activePiece.movePiece(gameBoard,'D',3+5)
+            # if event.key == K_DOWN:
+            #     activePiece.movePiece(gameBoard,'D',3+5)
             if event.key == K_UP:
                 activePiece.rotatePiece(gameBoard,1)
                 # activePiece.rotation += 1
@@ -290,6 +317,14 @@ while running:
                 activePiece.rotatePiece(gameBoard,-1)
             if event.key == K_SPACE:
                 activePiece.fastFall(gameBoard)
+            if event.key == K_RETURN:
+                print('HOLDING')
+                nextHeld = activePiece.shape
+                # if len(heldPiece.sprites()) > 0:
+                #     nextActive = heldPiece.shape
+                #     createPiece = 1
+                heldPiece = piece(nextHeld,gridBlockWidth+5,gridBlockHeight//2+3)
+                heldPiece.draw(DISPLAYSURF)
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
