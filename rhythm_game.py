@@ -3,18 +3,18 @@ def rhythm_game():
     import random
     pygame.init()
 
-    SIZE = WIDTH, HEIGHT = 625, 400 # define screen size
+    SIZE = WIDTH, HEIGHT = 750, 550 # define screen size
 
     # reshape start screen, background, and note image
     start_img = pygame.transform.scale(pygame.image.load('img_and_sound/start_screen.png'), (WIDTH, HEIGHT))
     bg_img = pygame.transform.scale(pygame.image.load('img_and_sound/background.png'), (WIDTH, HEIGHT))
-    note_img = pygame.transform.scale(pygame.image.load('img_and_sound/note.png'), (75,75))
-    line_img = pygame.transform.scale(pygame.image.load('img_and_sound/line.png'), (625,8))
+    note_img = pygame.transform.scale(pygame.image.load('img_and_sound/note.png'), (90,90))
+    line_img = pygame.transform.scale(pygame.image.load('img_and_sound/line.png'), (WIDTH,8))
 
     FPS = 50 # might need to make this higher
     screen = pygame.display.set_mode(SIZE)
     note_speed = 4
-    font = pygame.font.SysFont('comicsans', 30)
+    font = pygame.font.SysFont('comicsans', 40)
 
     # import sound files
     click_sound = pygame.mixer.Sound('img_and_sound/click.mp3')
@@ -33,7 +33,7 @@ def rhythm_game():
     # draw notes using screen.blit
     def draw_screen(note_L_list, note_M_list, note_R_list, score, line):
         screen.blit(bg_img, (0, 0)) # draw background
-        screen.blit(line_img, (0,350)) # draw line
+        screen.blit(line_img, (0,475)) # draw line
 
         # draw score text
         score_text = font.render("Score: " + str(score), 1, 'white')
@@ -107,7 +107,7 @@ def rhythm_game():
     note_L, note_M, note_R = pygame.Rect(0,0,0,0), pygame.Rect(0,0,0,0), pygame.Rect(0,0,0,0)
 
     # draw line as rectangle 
-    line = pygame.Rect(0,350,625,8)
+    line = pygame.Rect(0,475,WIDTH,8)
 
     # main loop
     while True:
@@ -119,15 +119,15 @@ def rhythm_game():
             # the notes are randomly spaced
             # repeat this randomization for left, middle, and right note column
             if event.type == add_note and random.randint(1,3) == 1:
-                note_L = pygame.Rect(100,0,75,75)
+                note_L = pygame.Rect(120,0,75,75)
                 note_L_list.append(note_L)
                 note_count += 1
             if event.type == add_note and random.randint(1,3) == 1:
-                note_M = pygame.Rect(275,0,75,75)
+                note_M = pygame.Rect(330,0,75,75)
                 note_M_list.append(note_M)
                 note_count += 1
             if event.type == add_note and random.randint(1,3) == 1:
-                note_R = pygame.Rect(450,0,75,75)
+                note_R = pygame.Rect(540,0,75,75)
                 note_R_list.append(note_R)
                 note_count += 1
 
@@ -140,7 +140,7 @@ def rhythm_game():
                     click_sound.play()
                     left_key = note_L.y
                     # allow a range of error (maybe need to change this)
-                    if (left_note - 5) < left_key < (left_note + 5):
+                    if (left_note - 10) < left_key < (left_note + 10):
                         score += 1
 
             # repeat for middle notes
