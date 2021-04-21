@@ -1,4 +1,5 @@
 import pygame, sys
+
 #Importing key inputs that will be used for sprite navigation
 from pygame.locals import (
     K_UP,
@@ -68,22 +69,11 @@ rotatePiece = {
         [[0,-2],[1,-1],[0,0],[1,1]]]
 }
 
-oppDirec = {
-    'L':'R',
-    'R':'L',
-    'U':'D',
-    'D':'U'
-}
-
 def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
     for x in range(0, gridWidth, blockSize):
         for y in range(0, gridHeight, blockSize):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(surface, color, rect, 1)
-
-
-
-
 
 class block(pygame.sprite.Sprite):
     def __init__(self, color, x, y, w, h):
@@ -132,7 +122,7 @@ class piece(pygame.sprite.Group):
         self.move(direc,mag)
         for sprite in self.sprites():
             if pygame.sprite.spritecollideany(sprite,board):
-                self.move(oppDirec[direc],-mag)
+                self.move(direc,-mag)
                 return True
         return False
             
@@ -141,6 +131,9 @@ class board(pygame.sprite.Group):
         super().__init__()
         for i in range(gridWidth//blockSize):
             self.add(block(color,i,gridHeight//blockSize-1/blockSize,1,1))
+        for i in range(gridHeight//blockSize):
+            self.add(block(color,gridWidth//blockSize,i,1,1))
+            self.add(block(color,-1,i,1,1))
     
     def addPiece(self,piece):
         for blk in piece.sprites():
@@ -167,7 +160,7 @@ gridWidth = 10*blockSize
 gridHeight = (20-1)*blockSize
  
 # Setup a 300x300 pixel display with caption
-DISPLAYSURF = pygame.display.set_mode((gridWidth,gridHeight))
+DISPLAYSURF = pygame.display.set_mode((gridWidth+blockSize,gridHeight))
 DISPLAYSURF.fill(WHITE)
 pygame.display.set_caption("Example")
 
@@ -187,8 +180,6 @@ for key in buildPiece.keys():
         # print(count)
 
         keys = pygame.key.get_pressed() # checking pressed keys
-        if keys[pygame.K_SPACE]:
-            running = False
         
         if (count%2)==0:
             if testPiece.checkBoundary(gameBoard,'D',1):
@@ -212,6 +203,8 @@ for key in buildPiece.keys():
                     testPiece.rotate(testPiece.rotation)
                     testPiece.rotation += 1
                     testPiece.rotation = testPiece.rotation % 4
+                if event.key == K_SPACE:
+                    running = False
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
