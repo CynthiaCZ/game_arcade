@@ -76,7 +76,7 @@ def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
             pygame.draw.rect(surface, color, rect, 1)
 
 class block(pygame.sprite.Sprite):
-    def __init__(self, color, x, y, w, h):
+    def __init__(self, color, x, y, w, h, movable = True):
         super().__init__() #Calling parent class
         self.image = pygame.Surface([w*blockSize, h*blockSize])
         self.image.fill(color)
@@ -84,6 +84,7 @@ class block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x*blockSize
         self.rect.y = y*blockSize
+        self.movable = movable
 
     def move(self,direc,mag):
         if (direc == 'L'):
@@ -136,10 +137,10 @@ class board(pygame.sprite.Group):
     def __init__(self,color):
         super().__init__()
         for i in range(gridWidth//blockSize):
-            self.add(block(color,i,gridHeight//blockSize-1/blockSize,1,1))
+            self.add(block(color,i,gridHeight//blockSize-1/blockSize,1,1,False))
         for i in range(gridHeight//blockSize):
-            self.add(block(color,gridWidth//blockSize,i,1,1))
-            self.add(block(color,-1,i,1,1))
+            self.add(block(color,gridWidth//blockSize,i,1,1,False))
+            self.add(block(color,-1,i,1,1,False))
     
     def addPiece(self,piece):
         yChecks = set()
@@ -163,6 +164,9 @@ class board(pygame.sprite.Group):
         print('clearing line')
         for sprite in clearSet:
             self.remove(sprite)
+        for sprite in self.sprites():
+            if sprite.movable:
+                sprite.move('D',blockSize)
 
 
 
