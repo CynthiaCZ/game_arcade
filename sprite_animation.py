@@ -52,13 +52,15 @@ def main():
                 pygame.quit()
                 quit()
 
-            # if event.type == pygame.KEYDOWN:
-                # if event.key == pygame.K_LEFT:
-
-                # loop the 4 frames where the sprite is facing left
-
-                # move the sprite 
-                # sprite_position.x += sprite_speed
+            keypress = pg.key.get_pressed()        
+            if keypress[K_LEFT]:
+                self.rect.x -= 2
+            if keypress[K_RIGHT]:
+                self.rect.x += 2
+            if keypress[K_UP]:
+                self.rect.y -= 2
+            if keypress[K_DOWN]:
+                self.rect.y += 2
 
         my_group.update()
         screen.fill(BACKGROUND_COLOR)
