@@ -1,3 +1,6 @@
 
 .DS_Store
 __pycache__/rhythm_game.cpython-39.pyc
+__pycache__/crossingroad.cpython-39.pyc
+__pycache__/snake.cpython-39.pyc
+__pycache__/Tetris.cpython-39.pyc
