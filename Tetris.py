@@ -78,13 +78,8 @@ def drawGrid(gridWidth,gridHeight,blockSize,color,surface):
             rect = pygame.Rect(x, y, blockSize, blockSize)
             pygame.draw.rect(surface, color, rect, 1)
 
-# def drawContainer(surface,color,x,y):
-#     pygame.draw.rect
-
-
-# def holdPiece(activePiece,heldPiece):
-#     if len(heldPiece.sprites()) == 0:
-#         heldPiece = piece(activePiece.shape,gridWidth+100,gridHeight/2+100)
+def drawContainer(surface,color,x,y,w,h):
+    pygame.draw.rect(surface,color,pygame.Rect(x*blockSize,y*blockSize,w*blockSize,h*blockSize))
 
 class block(pygame.sprite.Sprite):
     def __init__(self, color, x, y, w, h, movable = True):
@@ -126,18 +121,8 @@ class piece(pygame.sprite.Group):
         self.shape = shape
         self.color = colorPiece[shape]
         self.rotation = 0
-        # yNeg = 0
         for i in range(4):
             self.add(block(self.color,x+buildPiece[shape][i][0],y+buildPiece[shape][i][1],1,1))
-        #     if y+buildPiece[shape][i][1]:
-        #         yNeg = 1
-        # while yNeg:
-        #     self.move('D',blockSize)
-        #     yNeg = 0
-        #     for sprite in self.sprites():
-        #         if sprite.rect.y < 0:
-        #             yNeg = 1
-        
 
     def move(self,direc,mag):
         for blk in self.sprites():
@@ -261,7 +246,7 @@ gridHeight = gridBlockHeight*blockSize
 # Setup a 300x300 pixel display with caption
 DISPLAYSURF = pygame.display.set_mode((2*gridWidth,gridHeight))
 DISPLAYSURF.fill(WHITE)
-pygame.display.set_caption("Example")
+pygame.display.set_caption("Shaughn's Tetris Game")
 
 gameBoard = board(GRAY)
 
@@ -270,6 +255,7 @@ countSpeed = 50
 pieceCount = 0
 nextActive = ''
 nextHeld = ''
+pauseHold = 0
 
 # Important game flags
 running = True
@@ -290,6 +276,7 @@ while running:
         pieceCount += 1
         # count = 49
         createPiece = 0
+        pauseHold = 0
 
     keys = pygame.key.get_pressed() # checking pressed keys
 
@@ -303,12 +290,7 @@ while running:
             gameBoard.addPiece(activePiece)
             createPiece = 1
 
-    DISPLAYSURF.fill(WHITE)
-    pygame.draw.rect(DISPLAYSURF,GRAY,pygame.Rect((gridBlockWidth+3)*blockSize,(gridBlockHeight//2+1)*blockSize,6*blockSize,4*blockSize))
-    drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
-    activePiece.draw(DISPLAYSURF)
-    heldPiece.draw(DISPLAYSURF)
-    gameBoard.draw(DISPLAYSURF)
+
     
         
     for event in pygame.event.get():
@@ -330,13 +312,29 @@ while running:
             if event.key == K_RETURN:
                 print('HOLDING')
                 nextHeld = activePiece.shape
-                # if len(heldPiece.sprites()) > 0:
-                #     nextActive = heldPiece.shape
-                #     createPiece = 1
+                activePiece.empty()
+                
+                if len(heldPiece.sprites()) > 0 and not pauseHold:
+                    activePiece = piece(heldPiece.shape,3,0)
+                    count = 0
+                    pauseHold = 1
+                else:
+                    createPiece = 1
+
                 heldPiece = piece(nextHeld,gridBlockWidth+4,gridBlockHeight//2+2)
+                activePiece.draw(DISPLAYSURF)
                 heldPiece.draw(DISPLAYSURF)
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
+    DISPLAYSURF.fill(WHITE)
+    drawContainer(DISPLAYSURF,GRAY,gridBlockWidth+3,gridBlockHeight//2+1,6,4)
+    # pygame.draw.rect(DISPLAYSURF,GRAY,pygame.Rect((gridBlockWidth+3)*blockSize,(gridBlockHeight//2+1)*blockSize,6*blockSize,4*blockSize))
+    drawGrid(gridWidth,gridHeight,blockSize,BLACK,DISPLAYSURF)
+    activePiece.draw(DISPLAYSURF)
+    heldPiece.draw(DISPLAYSURF)
+    gameBoard.draw(DISPLAYSURF)
+
     pygame.display.update()
     FramePerSec.tick(FPS)
