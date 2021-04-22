@@ -9,7 +9,7 @@
   * Tetris
 
 ## Required python packages
-### These need to be installed for the programs to run
+##### These need to be installed for the programs to run
 * Pygame/2.0.1
 * Pillow/8.2.0
 
