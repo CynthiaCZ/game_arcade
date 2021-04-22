@@ -26,12 +26,12 @@ colorPiece = {
 }
 
 buildPiece = {
-    'I':[[0,0],[1,0],[2,0],[3,0]],
+    'I':[[0,1],[1,1],[2,1],[3,1]],
     'J':[[0,0],[0,1],[1,1],[2,1]],
-    'L':[[0,0],[1,0],[2,0],[2,-1]],
+    'L':[[0,1],[1,1],[2,1],[2,0]],
     'O':[[0,0],[0,1],[1,1],[1,0]],
-    'S':[[0,0],[1,0],[1,-1],[2,-1]],
-    'T':[[0,0],[1,0],[1,-1],[2,0]],
+    'S':[[0,1],[1,1],[1,0],[2,0]],
+    'T':[[0,1],[1,1],[1,0],[2,1]],
     'Z':[[0,0],[1,0],[1,1],[2,1]],
 }
 
@@ -126,8 +126,18 @@ class piece(pygame.sprite.Group):
         self.shape = shape
         self.color = colorPiece[shape]
         self.rotation = 0
+        # yNeg = 0
         for i in range(4):
             self.add(block(self.color,x+buildPiece[shape][i][0],y+buildPiece[shape][i][1],1,1))
+        #     if y+buildPiece[shape][i][1]:
+        #         yNeg = 1
+        # while yNeg:
+        #     self.move('D',blockSize)
+        #     yNeg = 0
+        #     for sprite in self.sprites():
+        #         if sprite.rect.y < 0:
+        #             yNeg = 1
+        
 
     def move(self,direc,mag):
         for blk in self.sprites():
@@ -323,7 +333,7 @@ while running:
                 # if len(heldPiece.sprites()) > 0:
                 #     nextActive = heldPiece.shape
                 #     createPiece = 1
-                heldPiece = piece(nextHeld,gridBlockWidth+5,gridBlockHeight//2+3)
+                heldPiece = piece(nextHeld,gridBlockWidth+4,gridBlockHeight//2+2)
                 heldPiece.draw(DISPLAYSURF)
         if event.type == QUIT:
             pygame.quit()
