@@ -1,4 +1,4 @@
-# CLPS0950 final project
+# Game Arcade
 
 ## Project Introduction
 * This project uses pygame to build a collection of minigames
